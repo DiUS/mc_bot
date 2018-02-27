@@ -9,6 +9,15 @@
   crossorigin="anonymous"></script>
 
 <style>
+
+  body {
+	font-family: Verdana;
+  }
+  
+  .choice-button {
+	margin-left: 5px;
+  }
+
   .speech-topic {
 	margin-bottom: 15px;
 	display: block;
@@ -18,6 +27,29 @@
 	margin-bottom: 15px;
 	margin-left: 5px;
 	display: inline;
+  }
+  
+  #timer_entry {
+	margin-bottom: 15px;
+	margin-left: 5px;
+	display: inline;
+  }  
+  
+  #timer_length_minutes {
+	margin-bottom: 15px;
+	margin-left: 5px;
+	display: inline;
+  }
+  
+  #time_display {
+	height: 120px;
+	background-color: black;
+	color: white;
+	text-align: center;
+	font-family: courier;
+	font-weight: bold;
+	font-size: 110px;
+	padding: 10px;
   }
   
   .mc-button {
@@ -188,8 +220,34 @@ var webaudio_tooling_obj = function () {
 
 }();
 
-	var alarm_cycles = 0;
+	var alarmCycles = 0;
+	var endTime;
+	
+	function millisToMinutesAndSeconds(millis) {
+      var minutes = Math.floor(millis / 60000);
+      var seconds = ((millis % 60000) / 1000).toFixed(0);
+      return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+    }
 
+	function startTimer() {
+		console.log($('#timer_length_minutes').val());
+		now = Date.now();
+		endTime = Date.now() + 1000 * 60 * parseInt($('#timer_length_minutes').val());
+		console.log("now: " + now + " end time: " + endTime);
+		setTimeout(checkTimer, 1000);
+	}
+	
+	function checkTimer() {
+		var timeRemaining = endTime - Date.now();
+		if(timeRemaining > 0){
+   		  $('#time_display').html(millisToMinutesAndSeconds(timeRemaining));
+		  setTimeout(checkTimer, 1000);
+		} else {
+  		  $('#time_display').html(millisToMinutesAndSeconds(0));
+		  soundGong();
+		}
+	}
+	
 	function oneGong() {
 		var audio = new Audio('http://curiousbydefault.freehostia.com/sound_alarm.mp3');
         audio.play();
@@ -199,11 +257,11 @@ var webaudio_tooling_obj = function () {
 		var audio = new Audio('http://curiousbydefault.freehostia.com/sound_alarm.mp3');
         audio.play();
 		
-		if(alarm_cycles < 2){
+		if(alarmCycles < 2){
 			setTimeout(soundGong, 7000);
-			alarm_cycles = alarm_cycles + 1;
+			alarmCycles = alarmCycles + 1;
 		}else{
-			alarm_cycles = 0;
+			alarmCycles = 0;
 		}
 	}
 	
@@ -264,6 +322,31 @@ var webaudio_tooling_obj = function () {
 		volumes_buffer.shift();
 		volumes_buffer.push(value);
 	    console.log("pushed " + value + " into buffer: " + volumes_buffer);
+	}
+	
+	var names = [
+		"Elliott", 
+		"Fotini", 
+		"Manoj", 
+		"Joel", 
+		"David", 
+		"Kurt",
+		"Vanessa",
+		"Tom", 
+		"Marc"
+	]
+	
+	function sleep(milliseconds) {
+      return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
+	
+	async function randomVictim(){
+	    var display_delay = 50;
+		for(var i = 0; i < 50; i++){
+			$('#victim_name').val(names[randomIntFromInterval(0, names.length)]);
+			await sleep(display_delay);
+			display_delay = display_delay + 10;
+		}
 	}
 	
 	function zeroVolumesBuffer(){
@@ -342,9 +425,19 @@ var webaudio_tooling_obj = function () {
 	</audio>
 	
 	<hr/>
+   	  <label for="timer">Timer:</label><input id="timer_length_minutes" type="text" value="" size="5"/>
+	  <input type="button" value="Start!" onclick="startTimer();"></input>
+	  <br/>
+	  <div id="time_display">
+	     0:00
+	  </div>
+	<hr/>
+	  <input id="victim_name" type="text" value="Elliott Murray" size="10"></input>
+	  <input class="choice-button" type="button" onclick="randomVictim();" value="Choose random Sydneysider"></input>
+	<hr/>
 
-    <input type="button" value="3 Gongs" onclick="soundGong();"/>
     <input type="button" value="Gong" onclick="oneGong();"/>
+    <input type="button" value="3 Gongs" onclick="soundGong();"/>
 
 	<hr/>
 	
@@ -357,7 +450,7 @@ var webaudio_tooling_obj = function () {
 	  </div>
 
 	  <div id="container">
-		<input id="topic_0" class="speech-topic" type="text" value='The next presentation at this Back To Base will be Elliott Murrary with Machine Learning for everyone!'></input>
+		<input id="topic_0" class="speech-topic" type="text" value='The next presentation at this Back To Base will be Elliott Murray with Machine Learning for everyone!'></input>
 		<input id="topic_1" class="speech-topic" type="text" value='Now we have Kurt Brown with This Month at Deus'></input>
 		<input id="topic_2" class="speech-topic" type="text" value='Next up we have Vanessa with the Food Stats'></input>
 		<input id="topic_3" class="speech-topic" type="text" value='The next presentation will be Jamie Sanft on Design Thinking, Lean & Agile'></input>
