@@ -64,8 +64,8 @@
 	var change_threshold = 200;
 	var changing = false;
 	var average_of_buffer = 0;
-	var volumes_buffer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; 
-	
+	var volumes_buffer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+    var gain_node = null;
 
 var webaudio_tooling_obj = function () {
 
@@ -73,7 +73,7 @@ var webaudio_tooling_obj = function () {
 	
     console.log("audio is starting up ...");
 	
-	window.jokes = {};
+	window.jokes = [];
 	jokes[0] = "Moses had the first tablet that could connect to the cloud.";
 	jokes[1] = "The first computer dates back to Adam and Eve. It was an Apple with limited memory, just one byte. And then everything crashed.";
 	jokes[2] = "Is your name Wi-Fi? Because I'm feeling a connection.";
@@ -87,11 +87,22 @@ var webaudio_tooling_obj = function () {
 	jokes[10] = "Cats spend two thirds of their lives sleeping, and the other third making viral videos.";
 	jokes[11] = "How many programmers does it take to change a light bulb? None. It's a hardware problem.";
 
+	window.steve_quotes = [];
+	steve_quotes[0] = "Throughout my years in business, I discovered something. I would always ask why you do things. The answers that I would invariably get are: 'Oh, that's just the way things are done around here.' Nobody knows why they do what they do. Nobody thinks very deeply about things in business. Steve Jobs";
+	steve_quotes[1] = "In most people's vocabularies, design means veneer. It's interior decorating. It's the fabric of the curtains and the sofa. But to me, nothing could be further from the meaning of design. Steve Jobs";
+	steve_quotes[2] = "A lot of people in our industry haven't had very diverse experiences. So they don't have enough dots to connect, and they end up with very linear solutions without a broad perspective on the problem. The broader one's understanding of the human experience, the better design we will have. Steve Jobs";
+	steve_quotes[3] = "When you're young, you look at television and think, there's a conspiracy. The networks have conspired to dumb us down. But when you get a little older, you realize that's not true. The networks are in business to give people exactly what they want. Steve Jobs"
+	
+	window.bill_quotes = [];
+	bill_quotes[0] = "When you're young, you look at television and think, there's a conspiracy. The networks have conspired to dumb us down. But when you get a little older, you realize that's not true. The networks are in business to give people exactly what they want. Bill Gates";
+	bill_quotes[1] = "People always fear change. People feared electricity when it was invented, didn't they? People feared coal, they feared gas-powered engines... There will always be ignorance, and ignorance leads to fear. But with time, people will come to accept their silicon masters.";
+	bill_quotes[2] = "I have been struck again and again by how important measurement is to improving the human condition. Bill Gates"
+	bill_quotes[3] = "Being flooded with information doesn't mean we have the right information or that we're in touch with the right people."
+	
     var BUFF_SIZE_RENDERER = 16384;
 
     var audioInput = null,
     microphone_stream = null,
-    gain_node = null,
     script_processor_node = null,
     script_processor_analysis_node = null,
     analyser_node = null;
@@ -128,12 +139,6 @@ var webaudio_tooling_obj = function () {
 			if(given_typed_array[index] > maximum){
 				maximum = given_typed_array[index];
 			}
-			//$('#volume_value').html("<br/>max: " + maximum);
-			//console.log(volume);
-			//if(volume != 0){
-			//  $('#volume_bar').width(volume);
-			//  $('#volume_value').html(index + " " + volume);
-			//}
 		}
 		
 		var window_total = 0;
@@ -144,18 +149,13 @@ var webaudio_tooling_obj = function () {
 		average_volume = window_total / window_size * 10000;
 		//console.log("average volume: " + average_volume);
 		if(average_volume > 100){
-			//$('#volume_bar').width(average_volume);
-			$('#volume_bar').width(average_of_buffer);
-			//$('#volume_value').html(average_volume);
-			if(average_volume > 500){
-				average_volume = 500; // make a MAX - so we can get CRAZY high values suddenly swinging it up
-			}
-			over_threshold_volume = average_volume;
+			average_volume = 500; // make a MAX - so we can get CRAZY high values suddenly swinging it up
+   		    pushIntoVolumesBuffer(average_volume);
 		}
-		if(average_volume < 0){
-		  over_threshold_volume = 100; // is this a good idea? 
+		if(average_volume < 100 && average_volume > 30){
+		  average_volume = 100; // make a minimum - so we don't flail wildly around...
+   		  //pushIntoVolumesBuffer(average_volume);
 		}
-		//console.log(volumes_buffer + " average: " + average_of_buffer);
     }
 	
     function process_microphone_buffer(event) {
@@ -178,6 +178,7 @@ var webaudio_tooling_obj = function () {
 		//numberOfInputs:1
 		//numberOfOutputs:1
         gain_node.connect(audioContext.destination);
+		gain_node.gain = 0.1;
 
         microphone_stream = audioContext.createMediaStreamSource(stream);
         microphone_stream.connect(gain_node); 
@@ -191,7 +192,8 @@ var webaudio_tooling_obj = function () {
         script_processor_analysis_node.connect(gain_node);
 
         analyser_node = audioContext.createAnalyser();
-        analyser_node.smoothingTimeConstant = 0;
+        //analyser_node.smoothingTimeConstant = 0;
+        analyser_node.smoothingTimeConstant = 1; // between 0 and 1 - 1 for smoothest
         analyser_node.fftSize = 2048;
 
         microphone_stream.connect(analyser_node);
@@ -300,8 +302,7 @@ var webaudio_tooling_obj = function () {
 			topic = $('#topic_' + current);
 			console.log(topic);
 			speakText(topic[0].value);
-			current = current + 1;
-			$('#speech_index').val(current);
+			setSpeechIndex(current + 1);
 		}
 		
 		window.randomIntFromInterval = function(min,max)
@@ -310,11 +311,22 @@ var webaudio_tooling_obj = function () {
 		}
 		
 		window.randomITJoke = function() {
-		    var joke_index = randomIntFromInterval(0, 10);
+		    var joke_index = randomIntFromInterval(0, window.jokes.length);
 			speakText(window.jokes[joke_index]);
 		}
 
+		window.randomSteveQuote = function() {
+		    var steve_quote_index  = randomIntFromInterval(0, steve_quotes.length);
+			speakText(steve_quotes[steve_quote_index]);
+		}
+
+		window.randomBillQuote = function() {
+		    var bill_quote_index  = randomIntFromInterval(0, bill_quotes.length);
+			speakText(bill_quotes[bill_quote_index]);
+		}
+
 		function speakText(text){
+		  gain_node.gain = 0;
 		  var speech = new SpeechSynthesisUtterance(text);
 		  var voices = window.speechSynthesis.getVoices();
 		  speech.lang = $('#voice_choice').val();
@@ -324,6 +336,7 @@ var webaudio_tooling_obj = function () {
 			announcing = false;
         	window.checkMicrophoneLevel();
 			zeroVolumesBuffer();
+			gain_node.gain = 0.5;
 		  }
 		}
 		
@@ -384,9 +397,6 @@ var webaudio_tooling_obj = function () {
 			"Karen",
 			"Katie",
 			"Kevin",
-			"Kirsty",
-			"Kurt",
-			"Lachlan",
 			"Manoj",
 			"Marc",
 			"Marcin",
@@ -434,7 +444,7 @@ var webaudio_tooling_obj = function () {
 		current = index;
 		var speeches = $('.speech-topic');
 		
-		for(var i = 0;i< speeches.length;i++) {
+		for(var i = 0;i < speeches.length;i++) {
 			var element = $(speeches[i]);
 			element.removeClass('selected-speech');
 		}
@@ -446,6 +456,16 @@ var webaudio_tooling_obj = function () {
 	function sleep(milliseconds) {
       return new Promise(resolve => setTimeout(resolve, milliseconds));
     }
+	
+	function disableApplauseOMeter(){
+		announcing = true;
+		gain_node.gain = 0;
+	}
+	
+	function enableApplauseOMeter(){
+		announcing = false;
+		gain_node.gain = 0.5;
+	}
 	
 	async function randomVictim(){
 	    var display_delay = 50;
@@ -464,13 +484,21 @@ var webaudio_tooling_obj = function () {
     function getSum(total, num) {
         return total + Math.round(num);
     }
+	
+	function averageOfBuffer() {
+		var sum_of_buffer = volumes_buffer.reduce(getSum, 0);
+		var average = Math.floor(sum_of_buffer/volumes_buffer.length);
+		//console.log("average: " + average + " " + volumes_buffer);
+		return average;
+	}
 
 	checkMicrophoneLevel = function(){
 
-		pushIntoVolumesBuffer(over_threshold_volume);
-
-		var sum_of_buffer = volumes_buffer.reduce(getSum, 0);
-		average_of_buffer = Math.floor(sum_of_buffer/12);
+	    if(average_volume = 100){
+  		  pushIntoVolumesBuffer(average_volume);
+		}
+		average_of_buffer = averageOfBuffer();
+		$('#volume_bar').width(average_of_buffer);
 		
 	    if(!announcing) {
 			//console.log('average of buffer: ' + average_of_buffer + ' >> ' + volumes_buffer);
@@ -504,7 +532,7 @@ var webaudio_tooling_obj = function () {
 			  $('#applause_sign').css('visibility', 'hidden');
 			}
 
-			setTimeout(checkMicrophoneLevel, 600);
+			setTimeout(checkMicrophoneLevel, 1000);
 		}
 	}
 
@@ -519,9 +547,6 @@ var webaudio_tooling_obj = function () {
 	<div id="volume_bar" style="background-color:blue;width:30px;height:50px;">
 	</div>
 	<br/>
-	<br/>
-	<div id="volume_value" style="background-color:lightblue;width:50px;height:50px;padding:10px">
-	</div>
 
 	<div id="applause_sign" style="background-color:black;color:white;width:650px;height:100px;padding:20px;font-size:30px;font-weight:bold;visibility:hidden;font-family:Arial;">
 	   APPLAUSE!!
@@ -567,6 +592,9 @@ var webaudio_tooling_obj = function () {
 	  
 	  <div>
 		<input class="mc-button" type="button" onclick="nextSpeech();" value="Announce Speech" />
+		<hr/>
+   	    <input class="mc-button" type="button" onclick="disableApplauseOMeter();" value="Disable Applause-o-meter" />
+	    <input class="mc-button" type="button" onclick="enableApplauseOMeter();" value="Enable Applause-o-meter" />
 	  </div>
 	  
 	  <hr/>
@@ -581,6 +609,8 @@ var webaudio_tooling_obj = function () {
 	<!--h2> random BOT joke - say one - then wait for applause - if we get enough applause - say another one!</h2-->
 	<div>
 	  <input class="mc-button" type="button" onclick="randomITJoke();" value="Random IT Joke" />
+	  <input class="mc-button" type="button" onclick="randomSteveQuote();" value="Random Steve Quote" />
+	  <input class="mc-button" type="button" onclick="randomBillQuote();" value="Random Bill Quote" />
 	</div>
 	
 	<!--div>
