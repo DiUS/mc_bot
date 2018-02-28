@@ -54,6 +54,7 @@
   .mc-button {
 	margin-bottom: 15px;
   }
+  
 
 </style>
   
@@ -67,12 +68,6 @@
 	var volumes_buffer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; 
     var gain_node = null;
 
-var webaudio_tooling_obj = function () {
-
-    var audioContext = new AudioContext();
-	
-    console.log("audio is starting up ...");
-	
 	window.jokes = [];
 	jokes[0] = "Moses had the first tablet that could connect to the cloud.";
 	jokes[1] = "The first computer dates back to Adam and Eve. It was an Apple with limited memory, just one byte. And then everything crashed.";
@@ -98,6 +93,12 @@ var webaudio_tooling_obj = function () {
 	bill_quotes[1] = "People always fear change. People feared electricity when it was invented, didn't they? People feared coal, they feared gas-powered engines... There will always be ignorance, and ignorance leads to fear. But with time, people will come to accept their silicon masters.";
 	bill_quotes[2] = "I have been struck again and again by how important measurement is to improving the human condition. Bill Gates"
 	bill_quotes[3] = "Being flooded with information doesn't mean we have the right information or that we're in touch with the right people."
+
+/*var webaudio_tooling_obj = function () {
+
+    var audioContext = new AudioContext();
+	
+    console.log("audio is starting up ...");
 	
     var BUFF_SIZE_RENDERER = 16384;
 
@@ -165,7 +166,7 @@ var webaudio_tooling_obj = function () {
 
     function start_microphone(stream){
 
-        gain_node = audioContext.createGain();
+        //gain_node = audioContext.createGain();
 		//GainNode - this is what is created at this point.... what is the source of the amplification!? 
 		//channelCount:2
 		//channelCountMode:"max"
@@ -177,8 +178,8 @@ var webaudio_tooling_obj = function () {
 		//value:1
 		//numberOfInputs:1
 		//numberOfOutputs:1
-        gain_node.connect(audioContext.destination);
-		gain_node.gain = 0.1;
+        //gain_node.connect(audioContext.destination);
+		//gain_node.gain = 0.1;
 
         microphone_stream = audioContext.createMediaStreamSource(stream);
         microphone_stream.connect(gain_node); 
@@ -219,11 +220,14 @@ var webaudio_tooling_obj = function () {
         };
     }
 
-}();
+}(); */
 
 	var alarmCycles = 0;
 	var endTime;
 	
+	var display_window = window.open("", "_blank");
+	
+	console.log('window is: ' + display_window);
 	function millisToMinutesAndSeconds(millis) {
       var minutes = Math.floor(millis / 60000);
       var seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -265,6 +269,28 @@ var webaudio_tooling_obj = function () {
 			alarmCycles = 0;
 		}
 	}
+	
+	function clearAudienceDiv(){
+		$(display_window.document.body).css({'background-color': 'black'});
+		$(display_window.document.body).html('');
+	}
+	
+	function applausePlease(){
+		var audienceDiv = document.createElement("div");
+		$(audienceDiv).html("APPLAUSE!");
+		$(audienceDiv).css({'background-color': 'black',
+		                    'color': 'white',
+							'width': '650px', 
+							'height': '100px', 
+							'padding': '20px',
+							'font-size': '60px',
+							'text-align': 'center',
+							'font-weight': 'bold',
+ 						    'font-family': 'Arial'});
+
+		$(display_window.document.body).html(audienceDiv);
+		setTimeout(clearAudienceDiv, 5000);
+	}
 
 	window.attachSpeechIndexChangeHandlers = function() {
 		$('.speech-topic').click(function() {
@@ -277,6 +303,8 @@ var webaudio_tooling_obj = function () {
 	
 	$(document).ready(function(){
 
+	    clearAudienceDiv();
+	
 	    $('#speech_index').change(function() {
 			current = parseInt(this.value - 1);
 			console.log(current);
@@ -326,17 +354,17 @@ var webaudio_tooling_obj = function () {
 		}
 
 		function speakText(text){
-		  gain_node.gain = 0;
+		  //gain_node.gain = 0;
 		  var speech = new SpeechSynthesisUtterance(text);
 		  var voices = window.speechSynthesis.getVoices();
 		  speech.lang = $('#voice_choice').val();
 		  window.speechSynthesis.speak(speech);
 		  speech.onend = function(event) {
 			console.log(event);
-			announcing = false;
-        	window.checkMicrophoneLevel();
-			zeroVolumesBuffer();
-			gain_node.gain = 0.5;
+			//announcing = false;
+        	//window.checkMicrophoneLevel();
+			//zeroVolumesBuffer();
+			//gain_node.gain = 0.5;
 		  }
 		}
 		
@@ -457,16 +485,6 @@ var webaudio_tooling_obj = function () {
       return new Promise(resolve => setTimeout(resolve, milliseconds));
     }
 	
-	function disableApplauseOMeter(){
-		announcing = true;
-		gain_node.gain = 0;
-	}
-	
-	function enableApplauseOMeter(){
-		announcing = false;
-		gain_node.gain = 0.5;
-	}
-	
 	async function randomVictim(){
 	    var display_delay = 50;
 		for(var i = 0; i < 50; i++){
@@ -492,7 +510,7 @@ var webaudio_tooling_obj = function () {
 		return average;
 	}
 
-	checkMicrophoneLevel = function(){
+	/*checkMicrophoneLevel = function(){
 
 	    if(average_volume = 100){
   		  pushIntoVolumesBuffer(average_volume);
@@ -534,10 +552,10 @@ var webaudio_tooling_obj = function () {
 
 			setTimeout(checkMicrophoneLevel, 1000);
 		}
-	}
+	}*/
 
 	setSpeechIndex(0);
-	window.checkMicrophoneLevel();
+	//window.checkMicrophoneLevel();
 	
 </script>
 
@@ -570,6 +588,7 @@ var webaudio_tooling_obj = function () {
 
     <input type="button" value="Gong" onclick="oneGong();"/>
     <input type="button" value="3 Gongs" onclick="soundGong();"/>
+    <input type="button" value="Applause Please" onclick="applausePlease();"/>
 
 	<hr/>
 	
@@ -588,14 +607,15 @@ var webaudio_tooling_obj = function () {
 
 	  <div>
 		<input class="mc-button" type="button" onclick="addSpeech();" value="Add Speech"/>
+		<input class="mc-button" type="button" onclick="nextSpeech();" value="Announce Speech" />
 	  </div>
 	  
-	  <div>
+	  <!-- div>
 		<input class="mc-button" type="button" onclick="nextSpeech();" value="Announce Speech" />
 		<hr/>
    	    <input class="mc-button" type="button" onclick="disableApplauseOMeter();" value="Disable Applause-o-meter" />
 	    <input class="mc-button" type="button" onclick="enableApplauseOMeter();" value="Enable Applause-o-meter" />
-	  </div>
+	  </div -->
 	  
 	  <hr/>
 	  <select id="voice_choice">
