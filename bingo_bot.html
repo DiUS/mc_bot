@@ -231,6 +231,7 @@ var webaudio_tooling_obj = function () {
 
 	function startTimer() {
 		console.log($('#timer_length_minutes').val());
+    oneGong();
 		now = Date.now();
 		endTime = Date.now() + 1000 * 60 * parseInt($('#timer_length_minutes').val());
 		console.log("now: " + now + " end time: " + endTime);
@@ -537,7 +538,35 @@ var webaudio_tooling_obj = function () {
 
 	<hr/>
 
+	<h1>Bingo</h1>
 
+	<form>
+
+	  <div id="container">
+
+      <input id="topic_0" class="speech-topic" type="text" value='Welcome to Back To Base March 2018 edition. Hello and I am M C Bot and I will be your most excellent host for today.'></input>
+      <input id="topic_1" class="speech-topic" type="text" value='It is now time for Human Bingo. Yeah. First grab a pen and bingo sheet'></input>
+      <input id="topic_2" class="speech-topic" type="text" value='You must find someone who matches the question. Write their name. You can only use a person once. Fill out as many as you can before the third gong finishes. If you answer them all before then shout BINGO.'></input>
+	  </div>
+
+	  <div>
+		<input class="mc-button" type="button" onclick="addSpeech();" value="Add Speech"/>
+	  </div>
+
+	  <div>
+		<input class="mc-button" type="button" onclick="nextSpeech();" value="Announce Speech" />
+		<hr/>
+   	    <input class="mc-button" type="button" onclick="disableApplauseOMeter();" value="Disable Applause-o-meter" />
+	    <input class="mc-button" type="button" onclick="enableApplauseOMeter();" value="Enable Applause-o-meter" />
+	  </div>
+
+	  <hr/>
+	  <select id="voice_choice">
+	    <option value="en-US">Stephen</option>
+		<option value="en-GB">Lara</option>
+		<option value="de-DE">Inge</option>
+	  </select>
+	</form>
 
 	<!--h2> random BOT joke - say one - then wait for applause - if we get enough applause - say another one!</h2-->
 	<div>
