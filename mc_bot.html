@@ -22,13 +22,12 @@
 	margin-bottom: 15px;
 	display: block;
   }
-
-  #speech_index {
-	margin-bottom: 15px;
-	margin-left: 5px;
-	display: inline;
-  }
   
+  .speech-topic.selected-speech {
+	background-color: lightblue;
+	border-color: blue;
+  }
+
   #timer_entry {
 	margin-bottom: 15px;
 	margin-left: 5px;
@@ -264,6 +263,15 @@ var webaudio_tooling_obj = function () {
 			alarmCycles = 0;
 		}
 	}
+
+	window.attachSpeechIndexChangeHandlers = function() {
+		$('.speech-topic').click(function() {
+			console.log(this.id);
+			topic_and_index = this.id.split('_');
+			console.log("index: " + topic_and_index[1]);
+			setSpeechIndex(parseInt(topic_and_index[1]));
+		});
+	}
 	
 	$(document).ready(function(){
 
@@ -271,7 +279,9 @@ var webaudio_tooling_obj = function () {
 			current = parseInt(this.value - 1);
 			console.log(current);
 		});
-	
+
+		window.attachSpeechIndexChangeHandlers();
+		
 	    var speechContainer = $('#container');
 	
 		window.addSpeech = function() {
@@ -283,6 +293,7 @@ var webaudio_tooling_obj = function () {
 			
 			input.id = 'topic_' + speeches_already;
 			container.appendChild(input);
+			window.attachSpeechIndexChangeHandlers();
 		}
 	
 		window.nextSpeech = function() {
@@ -328,7 +339,6 @@ var webaudio_tooling_obj = function () {
 			"Aaron",
 			"Alesia",
 			"Alice",
-			"Alistair",
 			"Alvi",
 			"Alvin",
 			"Andreas",
@@ -338,18 +348,13 @@ var webaudio_tooling_obj = function () {
 			"Bang",
 			"Ben",
 			"Bryan",
-			"Caoilte",
-			"Charles",
 			"Cody",
 			"Corey",
-			"Damon",
-			"Daniel",
 			"Daniel",
 			"Daniel",
 			"David",
 			"Deepak",
 			"Dennis",
-			"Derek",
 			"Dhiraj",
 			"Elizabeth",
 			"Elliott",
@@ -382,21 +387,15 @@ var webaudio_tooling_obj = function () {
 			"Kirsty",
 			"Kurt",
 			"Lachlan",
-			"Leif",
 			"Manoj",
 			"Marc",
 			"Marcin",
 			"Mario",
 			"Matthew",
 			"Mauricio",
-			"Max",
 			"Micah",
-			"Micahx",
-			"Micahx2",
 			"Michael",
 			"Michael",
-			"Michael",
-			"Mridul",
 			"Nattawat",
 			"Nicole",
 			"Paul",
@@ -415,26 +414,34 @@ var webaudio_tooling_obj = function () {
 			"Sandeep",
 			"Sean",
 			"Shidi",
-			"Sofy",
 			"Sol",
 			"Sonny",
 			"Stefano",
 			"Stephan",
 			"Stephen",
-			"Stephen",
 			"Steven",
-			"Theeban",
 			"Timothy",
 			"Tom",
 			"Tomas",
-			"Tony",
-			"Tony",
 			"Tristan",
 			"Vanessa",
 			"Vinicius",
 			"Waleed",
 			"Yang"
 	];
+
+    function setSpeechIndex(index) {
+		current = index;
+		var speeches = $('.speech-topic');
+		
+		for(var i = 0;i< speeches.length;i++) {
+			var element = $(speeches[i]);
+			element.removeClass('selected-speech');
+		}
+		
+		var speech = $('.speech-topic')[index];
+		$(speech).addClass('selected-speech');
+	}
 	
 	function sleep(milliseconds) {
       return new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -501,7 +508,7 @@ var webaudio_tooling_obj = function () {
 		}
 	}
 
-	var current = 0;
+	setSpeechIndex(0);
 	window.checkMicrophoneLevel();
 	
 </script>
@@ -545,10 +552,6 @@ var webaudio_tooling_obj = function () {
 
 	<form>
 
-      <div>
-	    <label for="speech_index">Speech:</label><input id="speech_index" type="text" value="" size="5"/>
-	  </div>
-
 	  <div id="container">
 		<input id="topic_0" class="speech-topic" type="text" value='The next presentation at this Back To Base will be Elliott Murray with Machine Learning for everyone!'></input>
 		<input id="topic_1" class="speech-topic" type="text" value='Now we have Kurt Brown with This Month at Deus'></input>
@@ -563,7 +566,7 @@ var webaudio_tooling_obj = function () {
 	  </div>
 	  
 	  <div>
-		<input class="mc-button" type="button" onclick="nextSpeech();" value="Next Speech" />
+		<input class="mc-button" type="button" onclick="nextSpeech();" value="Announce Speech" />
 	  </div>
 	  
 	  <hr/>
