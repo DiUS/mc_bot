@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <html>
 <head>
 <title>M.C. Bot</title>
@@ -271,7 +270,7 @@
 		}
 	}
 	
-	function clearAudienceDiv(){
+	function initAudienceDiv(){
 		$(display_window.document.body).css({'background-color': 'black'});
 		$(display_window.document.body).html('');
 	}
@@ -290,7 +289,7 @@
  						    'font-family': 'Arial'});
 
 		$(display_window.document.body).html(audienceDiv);
-		setTimeout(clearAudienceDiv, 5000);
+		setTimeout(initAudienceDiv, 5000);
 	}
 
 	window.attachSpeechIndexChangeHandlers = function() {
@@ -304,7 +303,7 @@
 	
 	$(document).ready(function(){
 
-	    clearAudienceDiv();
+	    initAudienceDiv();
 	
 	    $('#speech_index').change(function() {
 			current = parseInt(this.value - 1);
@@ -610,6 +609,9 @@
 		<input class="mc-button" type="button" onclick="addSpeech();" value="Add Speech"/>
 		<input class="mc-button" type="button" onclick="nextSpeech();" value="Announce Speech" />
 	  </div>
+
+      <hr/>
+	    <label for="free_text">Speak Text</label><input id="free_text" type="text"></input>
 	  
 	  <!-- div>
 		<input class="mc-button" type="button" onclick="nextSpeech();" value="Announce Speech" />
@@ -1296,8 +1298,10 @@ var webaudio_tooling_obj = function () {
 		<input id="topic_1" class="speech-topic" type="text" value='Next up we have the Vampish  Vanessa with Food Wall of Shame'></input>
 		<input id="topic_2" class="speech-topic" type="text" value='Now we have your favourite G M Kurt with This Month at Deus'></input>
     <input id="topic_3" class="speech-topic" type="text" value='Next up give a hand as  Helen and Tony  do a duet about the sales pipeline'></input>
-    <input id="topic_4" class="speech-topic" type="text" value='Prepare yourself for some blue steel with   Elliott and Machine Learning for everyone! He is so hot right now'></input>
-		<input id="topic_5" class="speech-topic" type="text" value='And we have saved the best for last as the  sensational Jamie talks on Design Thinking, Lean & Agile. wup wup'></input>
+
+		<input id="topic_4" class="speech-topic" type="text" value='Kirsty insert by Dave.'></input>
+  <input id="topic_5" class="speech-topic" type="text" value='Prepare yourself for some blue steel with   Elliott and Machine Learning for everyone! He is so hot right now'></input>
+		<input id="topic_6" class="speech-topic" type="text" value='And we have saved the best for last as the  sensational Jamie talks on Design Thinking, Lean & Agile.'></input>
   </div>
 
 	  <div>
@@ -1444,4 +1448,3 @@ var webaudio_tooling_obj = function () {
 </body>
 </html>
 
->>>>>>> 42adfb13ce3a5b07fa28bc73747693ff68bb66f2
