@@ -60,14 +60,6 @@
   
 <script type="text/javascript">
 
-	var average_volume = 0;
-	var over_threshold_volume = 0;
-	var change_threshold = 200;
-	var changing = false;
-	var average_of_buffer = 0;
-	var volumes_buffer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; 
-    var gain_node = null;
-
 	window.jokes = [];
 	jokes[0] = "Moses had the first tablet that could connect to the cloud.";
 	jokes[1] = "The first computer dates back to Adam and Eve. It was an Apple with limited memory, just one byte. And then everything crashed.";
@@ -93,134 +85,6 @@
 	bill_quotes[1] = "People always fear change. People feared electricity when it was invented, didn't they? People feared coal, they feared gas-powered engines... There will always be ignorance, and ignorance leads to fear. But with time, people will come to accept their silicon masters.";
 	bill_quotes[2] = "I have been struck again and again by how important measurement is to improving the human condition. Bill Gates"
 	bill_quotes[3] = "Being flooded with information doesn't mean we have the right information or that we're in touch with the right people."
-
-/*var webaudio_tooling_obj = function () {
-
-    var audioContext = new AudioContext();
-	
-    console.log("audio is starting up ...");
-	
-    var BUFF_SIZE_RENDERER = 16384;
-
-    var audioInput = null,
-    microphone_stream = null,
-    script_processor_node = null,
-    script_processor_analysis_node = null,
-    analyser_node = null;
-	started_changing = 0;
-	announcing = false;
-    maximum = 0;
-
-    if (!navigator.getUserMedia)
-        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-    navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
-    if (navigator.getUserMedia){
-
-        navigator.getUserMedia({audio:true}, 
-            function(stream) {
-                start_microphone(stream);
-            },
-            function(e) {
-                alert('Error capturing audio.');
-            }
-            );
-
-    } else { alert('getUserMedia not supported in this browser.'); }
-
-	
-    function show_some_data(given_typed_array, num_row_to_display, window_size) {
-
-        var buffer_size = given_typed_array.length;
-        var index = 0;
-
-		for (; index < num_row_to_display && index < buffer_size; index += 1) {
-			var curr_value_time = (given_typed_array[index] / 128) - 1.0;
-			var volume = Math.abs(curr_value_time) * 10000;
-			if(given_typed_array[index] > maximum){
-				maximum = given_typed_array[index];
-			}
-		}
-		
-		var window_total = 0;
-		for(var i = 0 ; i < window_size ; i++){
-			var curr_value_time = (given_typed_array[index] / 128) - 1.0;
-			window_total = window_total + curr_value_time;
-		}
-		average_volume = window_total / window_size * 10000;
-		//console.log("average volume: " + average_volume);
-		if(average_volume > 100){
-			average_volume = 500; // make a MAX - so we can get CRAZY high values suddenly swinging it up
-   		    pushIntoVolumesBuffer(average_volume);
-		}
-		if(average_volume < 100 && average_volume > 30){
-		  average_volume = 100; // make a minimum - so we don't flail wildly around...
-   		  //pushIntoVolumesBuffer(average_volume);
-		}
-    }
-	
-    function process_microphone_buffer(event) {
-        var i, N, inp, microphone_output_buffer;
-        microphone_output_buffer = event.inputBuffer.getChannelData(0); // just mono - 1 channel for now
-    }
-
-    function start_microphone(stream){
-
-        //gain_node = audioContext.createGain();
-		//GainNode - this is what is created at this point.... what is the source of the amplification!? 
-		//channelCount:2
-		//channelCountMode:"max"
-		//channelInterpretation:"speakers"
-		//gain:AudioParam
-		//defaultValue:1
-		//maxValue:3.4028234663852886e+38
-		//minValue:-3.4028234663852886e+38
-		//value:1
-		//numberOfInputs:1
-		//numberOfOutputs:1
-        //gain_node.connect(audioContext.destination);
-		//gain_node.gain = 0.1;
-
-        microphone_stream = audioContext.createMediaStreamSource(stream);
-        microphone_stream.connect(gain_node); 
-
-        script_processor_node = audioContext.createScriptProcessor(BUFF_SIZE_RENDERER, 1, 1);
-        script_processor_node.onaudioprocess = process_microphone_buffer;
-
-        microphone_stream.connect(script_processor_node);
-
-        script_processor_analysis_node = audioContext.createScriptProcessor(2048, 1, 1);
-        script_processor_analysis_node.connect(gain_node);
-
-        analyser_node = audioContext.createAnalyser();
-        //analyser_node.smoothingTimeConstant = 0;
-        analyser_node.smoothingTimeConstant = 1; // between 0 and 1 - 1 for smoothest
-        analyser_node.fftSize = 2048;
-
-        microphone_stream.connect(analyser_node);
-
-        analyser_node.connect(script_processor_analysis_node);
-
-        var buffer_length = analyser_node.frequencyBinCount;
-
-        var array_freq_domain = new Uint8Array(buffer_length);
-        var array_time_domain = new Uint8Array(buffer_length);
-
-        //console.log("buffer_length " + buffer_length);
-
-        script_processor_analysis_node.onaudioprocess = function() {
-
-            // get the average for the first channel
-            analyser_node.getByteFrequencyData(array_freq_domain);
-            analyser_node.getByteTimeDomainData(array_time_domain);
-
-            if (microphone_stream.playbackState == microphone_stream.PLAYING_STATE) {
-                show_some_data(array_time_domain, 5, 200);
-            }
-        };
-    }
-
-}(); */
 
 	var alarmCycles = 0;
 	var endTime;
@@ -270,9 +134,13 @@
 		}
 	}
 	
+	function speakFreely(){
+		speakText($('#free_text').val());
+	}
+	
 	function initAudienceDiv(){
 		$(display_window.document.body).css({'background-color': 'black'});
-		$(display_window.document.body).html('');
+		$(display_window.document.body).html("<div id='audience_window_div'></div>");
 	}
 	
 	function applausePlease(){
@@ -353,28 +221,17 @@
 			speakText(bill_quotes[bill_quote_index]);
 		}
 
-		function speakText(text){
-		  //gain_node.gain = 0;
+		window.speakText = function(text){
 		  var speech = new SpeechSynthesisUtterance(text);
 		  var voices = window.speechSynthesis.getVoices();
 		  speech.lang = $('#voice_choice').val();
 		  window.speechSynthesis.speak(speech);
 		  speech.onend = function(event) {
 			console.log(event);
-			//announcing = false;
-        	//window.checkMicrophoneLevel();
-			//zeroVolumesBuffer();
-			//gain_node.gain = 0.5;
 		  }
 		}
 		
 	});
-	
-	function pushIntoVolumesBuffer(value){
-		volumes_buffer.shift();
-		volumes_buffer.push(value);
-	    console.log("pushed " + value + " into buffer: " + volumes_buffer);
-	}
 	
 	var names = [
 			"Aaron",
@@ -391,7 +248,7 @@
 			"Bryan",
 			"Cody",
 			"Corey",
-			"Daniel",
+			"Damon",
 			"Daniel",
 			"David",
 			"Deepak",
@@ -405,7 +262,6 @@
 			"Fotini",
 			"Frederick",
 			"Gabriel",
-			"Gabriel",
 			"Gerd",
 			"Gisele",
 			"Helen",
@@ -414,17 +270,16 @@
 			"Jack",
 			"Jaime",
 			"Jason",
-			"Jeff",
-			"Jehanzeb",
 			"Jenesia",
 			"Joao",
 			"Joel",
 			"Jon",
 			"Josh",
 			"Justin",
-			"Karen",
 			"Katie",
 			"Kevin",
+			"Kirsty",
+			"Kurt",
 			"Manoj",
 			"Marc",
 			"Marcin",
@@ -433,10 +288,8 @@
 			"Mauricio",
 			"Micah",
 			"Michael",
-			"Michael",
 			"Nattawat",
 			"Nicole",
-			"Paul",
 			"Paul",
 			"Priyanka",
 			"Qim",
@@ -452,21 +305,25 @@
 			"Sandeep",
 			"Sean",
 			"Shidi",
+			"Sofy",
 			"Sol",
 			"Sonny",
 			"Stefano",
 			"Stephan",
 			"Stephen",
+			"Stephen",
 			"Steven",
 			"Timothy",
 			"Tom",
 			"Tomas",
+			"Tony",
+			"Tony",
 			"Tristan",
 			"Vanessa",
 			"Vinicius",
 			"Waleed",
 			"Yang"
-	];
+		];
 
     function setSpeechIndex(index) {
 		current = index;
@@ -485,94 +342,29 @@
       return new Promise(resolve => setTimeout(resolve, milliseconds));
     }
 	
+	window.setTextInAudienceWindowDiv = function(text) {
+		$(display_window.document.body).find('#audience_window_div').html(text);
+	}
+	
 	async function randomVictim(){
 	    var display_delay = 50;
 		for(var i = 0; i < 50; i++){
-			$('#victim_name').val(names[randomIntFromInterval(0, names.length)]);
+		
+			// as it gets closer to the victim - the colour changes...? 
+		    random_name = names[randomIntFromInterval(0, names.length)];
+			$('#victim_name').val(random_name);
+			setTextInAudienceWindowDiv(random_name);
 			await sleep(display_delay);
 			display_delay = display_delay + 10;
 		}
 	}
 	
-	function zeroVolumesBuffer(){
-		volumes_buffer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; 
-		console.log('ZEROED BUFFER!' + volumes_buffer);
-	}
-
-    function getSum(total, num) {
-        return total + Math.round(num);
-    }
-	
-	function averageOfBuffer() {
-		var sum_of_buffer = volumes_buffer.reduce(getSum, 0);
-		var average = Math.floor(sum_of_buffer/volumes_buffer.length);
-		//console.log("average: " + average + " " + volumes_buffer);
-		return average;
-	}
-
-	/*checkMicrophoneLevel = function(){
-
-	    if(average_volume = 100){
-  		  pushIntoVolumesBuffer(average_volume);
-		}
-		average_of_buffer = averageOfBuffer();
-		$('#volume_bar').width(average_of_buffer);
-		
-	    if(!announcing) {
-			//console.log('average of buffer: ' + average_of_buffer + ' >> ' + volumes_buffer);
-			if(!changing && (average_of_buffer > change_threshold)) {
-				changing = true;
-				started_changing = Date.now();
-			} 
-			
-			if (changing && average_of_buffer < change_threshold) {
-				changing = false;
-			}
-			
-			if(changing == true){
-			  var applause_sign = $('#applause_sign')
-			  applause_sign.css('visibility', 'visible');
-			  number_of_seconds = Math.floor((Date.now() - started_changing)/1000);
-			  applause_sign.html('APPLAUSE!! ' + number_of_seconds);
-			  
-			  if(number_of_seconds > 5) {
-   			     $('#applause_sign').html('THANK YOU!');
-				 changing = false;
-   			     $('#applause_sign').css('visibility', 'hidden');
-				 announcing = true;
-				 zeroVolumesBuffer()
-
-				 //oneGong();
-				 nextSpeech();
-			  }
-			  
-			} else {
-			  $('#applause_sign').css('visibility', 'hidden');
-			}
-
-			setTimeout(checkMicrophoneLevel, 1000);
-		}
-	}*/
-
 	setSpeechIndex(0);
-	//window.checkMicrophoneLevel();
 	
 </script>
 
 </head>
 <body>
-
-	<div id="volume_bar" style="background-color:blue;width:30px;height:50px;">
-	</div>
-	<br/>
-
-	<div id="applause_sign" style="background-color:black;color:white;width:650px;height:100px;padding:20px;font-size:30px;font-weight:bold;visibility:hidden;font-family:Arial;">
-	   APPLAUSE!!
-	</div>
-	
-	<audio preload="auto" autobuffer="" id="alarm_sound" style="display:none;">
-		<source src="http://curiousbydefault.freehostia.com/sound_alarm.mp3">
-	</audio>
 	
 	<hr/>
    	  <label for="timer">Timer:</label><input id="timer_length_minutes" type="text" value="" size="5"/>
@@ -611,7 +403,8 @@
 	  </div>
 
       <hr/>
-	    <label for="free_text">Speak Text</label><input id="free_text" type="text"></input>
+	    <label for="free_text">Free Speech</label><input id="free_text" class="speech-topic" type="text"></input><input class="mc-button" type="button" onclick="speakFreely();" value="Speak Freely" />
+	  <hr/>
 	  
 	  <!-- div>
 		<input class="mc-button" type="button" onclick="nextSpeech();" value="Announce Speech" />
@@ -748,703 +541,8 @@
 		voice
 		Specifies a voice and its attributes, to be used for synthesized speech, often used to change from one voice to another.
 		Optional
-		xml:lang, gender, age, variant, name
+		xml:lang, gender, age, variant, name -->
 	
-</body>
-</html>
-
-=======
-<html>
-<head>
-<title>M.C. Bot</title>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-
-<script
-  src="https://code.jquery.com/jquery-3.3.1.js"
-  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-  crossorigin="anonymous"></script>
-
-<style>
-
-  body {
-	font-family: Verdana;
-  }
-
-  .choice-button {
-	margin-left: 5px;
-  }
-
-  .speech-topic {
-	margin-bottom: 15px;
-	display: block;
-  }
-
-  .speech-topic.selected-speech {
-	background-color: lightblue;
-	border-color: blue;
-  }
-
-  #timer_entry {
-	margin-bottom: 15px;
-	margin-left: 5px;
-	display: inline;
-  }
-
-  #timer_length_minutes {
-	margin-bottom: 15px;
-	margin-left: 5px;
-	display: inline;
-  }
-
-  #time_display {
-	height: 120px;
-	background-color: black;
-	color: white;
-	text-align: center;
-	font-family: courier;
-	font-weight: bold;
-	font-size: 110px;
-	padding: 10px;
-  }
-
-  .mc-button {
-	margin-bottom: 15px;
-  }
-
-</style>
-
-<script type="text/javascript">
-
-	var average_volume = 0;
-	var over_threshold_volume = 0;
-	var change_threshold = 200;
-	var changing = false;
-	var average_of_buffer = 0;
-	var volumes_buffer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    var gain_node = null;
-
-var webaudio_tooling_obj = function () {
-
-    var audioContext = new AudioContext();
-
-    console.log("audio is starting up ...");
-
-	window.jokes = [];
-	jokes[0] = "Moses had the first tablet that could connect to the cloud.";
-	jokes[1] = "The first computer dates back to Adam and Eve. It was an Apple with limited memory, just one byte. And then everything crashed.";
-	jokes[2] = "Is your name Wi-Fi? Because I'm feeling a connection.";
-	jokes[3] = "I changed my password to the word incorrect. So whenever I forget what it is the computer will say Your password is incorrect.";
-	jokes[4] = "What did E.T.'s mother say to him when he got home? ,  Where on Earth have you been?!";
-	jokes[5] = "I love the F5 key. It´s just so refreshing.";
-	jokes[6] = "Question: What do you call the security outside of a Samsung Store?, Answer: Guardians of the Galaxy.";
-	jokes[7] = "My computer's got Miley Virus. It has stopped twerking.";
-	jokes[8] = "Question: What was Forrest Gump's email password? answer: one forrest one";
-	jokes[9] = "What does a baby computer call its father? Answer: Data.";
-	jokes[10] = "Cats spend two thirds of their lives sleeping, and the other third making viral videos.";
-	jokes[11] = "How many programmers does it take to change a light bulb? None. It's a hardware problem.";
-
-	window.steve_quotes = [];
-	steve_quotes[0] = "Throughout my years in business, I discovered something. I would always ask why you do things. The answers that I would invariably get are: 'Oh, that's just the way things are done around here.' Nobody knows why they do what they do. Nobody thinks very deeply about things in business. Steve Jobs";
-	steve_quotes[1] = "In most people's vocabularies, design means veneer. It's interior decorating. It's the fabric of the curtains and the sofa. But to me, nothing could be further from the meaning of design. Steve Jobs";
-	steve_quotes[2] = "A lot of people in our industry haven't had very diverse experiences. So they don't have enough dots to connect, and they end up with very linear solutions without a broad perspective on the problem. The broader one's understanding of the human experience, the better design we will have. Steve Jobs";
-	steve_quotes[3] = "When you're young, you look at television and think, there's a conspiracy. The networks have conspired to dumb us down. But when you get a little older, you realize that's not true. The networks are in business to give people exactly what they want. Steve Jobs"
-
-	window.bill_quotes = [];
-	bill_quotes[0] = "When you're young, you look at television and think, there's a conspiracy. The networks have conspired to dumb us down. But when you get a little older, you realize that's not true. The networks are in business to give people exactly what they want. Bill Gates";
-	bill_quotes[1] = "People always fear change. People feared electricity when it was invented, didn't they? People feared coal, they feared gas-powered engines... There will always be ignorance, and ignorance leads to fear. But with time, people will come to accept their silicon masters.";
-	bill_quotes[2] = "I have been struck again and again by how important measurement is to improving the human condition. Bill Gates"
-	bill_quotes[3] = "Being flooded with information doesn't mean we have the right information or that we're in touch with the right people."
-
-    var BUFF_SIZE_RENDERER = 16384;
-
-    var audioInput = null,
-    microphone_stream = null,
-    script_processor_node = null,
-    script_processor_analysis_node = null,
-    analyser_node = null;
-	started_changing = 0;
-	announcing = false;
-    maximum = 0;
-
-    if (!navigator.getUserMedia)
-        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-    navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
-    if (navigator.getUserMedia){
-
-        navigator.getUserMedia({audio:true},
-            function(stream) {
-                start_microphone(stream);
-            },
-            function(e) {
-                alert('Error capturing audio.');
-            }
-            );
-
-    } else { alert('getUserMedia not supported in this browser.'); }
-
-
-    function show_some_data(given_typed_array, num_row_to_display, window_size) {
-
-        var buffer_size = given_typed_array.length;
-        var index = 0;
-
-		for (; index < num_row_to_display && index < buffer_size; index += 1) {
-			var curr_value_time = (given_typed_array[index] / 128) - 1.0;
-			var volume = Math.abs(curr_value_time) * 10000;
-			if(given_typed_array[index] > maximum){
-				maximum = given_typed_array[index];
-			}
-		}
-
-		var window_total = 0;
-		for(var i = 0 ; i < window_size ; i++){
-			var curr_value_time = (given_typed_array[index] / 128) - 1.0;
-			window_total = window_total + curr_value_time;
-		}
-		average_volume = window_total / window_size * 10000;
-		//console.log("average volume: " + average_volume);
-		if(average_volume > 100){
-			average_volume = 500; // make a MAX - so we can get CRAZY high values suddenly swinging it up
-   		    pushIntoVolumesBuffer(average_volume);
-		}
-		if(average_volume < 100 && average_volume > 30){
-		  average_volume = 100; // make a minimum - so we don't flail wildly around...
-   		  //pushIntoVolumesBuffer(average_volume);
-		}
-    }
-
-    function process_microphone_buffer(event) {
-        var i, N, inp, microphone_output_buffer;
-        microphone_output_buffer = event.inputBuffer.getChannelData(0); // just mono - 1 channel for now
-    }
-
-    function start_microphone(stream){
-
-        gain_node = audioContext.createGain();
-		//GainNode - this is what is created at this point.... what is the source of the amplification!?
-		//channelCount:2
-		//channelCountMode:"max"
-		//channelInterpretation:"speakers"
-		//gain:AudioParam
-		//defaultValue:1
-		//maxValue:3.4028234663852886e+38
-		//minValue:-3.4028234663852886e+38
-		//value:1
-		//numberOfInputs:1
-		//numberOfOutputs:1
-        gain_node.connect(audioContext.destination);
-		gain_node.gain = 0.1;
-
-        microphone_stream = audioContext.createMediaStreamSource(stream);
-        microphone_stream.connect(gain_node);
-
-        script_processor_node = audioContext.createScriptProcessor(BUFF_SIZE_RENDERER, 1, 1);
-        script_processor_node.onaudioprocess = process_microphone_buffer;
-
-        microphone_stream.connect(script_processor_node);
-
-        script_processor_analysis_node = audioContext.createScriptProcessor(2048, 1, 1);
-        script_processor_analysis_node.connect(gain_node);
-
-        analyser_node = audioContext.createAnalyser();
-        //analyser_node.smoothingTimeConstant = 0;
-        analyser_node.smoothingTimeConstant = 1; // between 0 and 1 - 1 for smoothest
-        analyser_node.fftSize = 2048;
-
-        microphone_stream.connect(analyser_node);
-
-        analyser_node.connect(script_processor_analysis_node);
-
-        var buffer_length = analyser_node.frequencyBinCount;
-
-        var array_freq_domain = new Uint8Array(buffer_length);
-        var array_time_domain = new Uint8Array(buffer_length);
-
-        //console.log("buffer_length " + buffer_length);
-
-        script_processor_analysis_node.onaudioprocess = function() {
-
-            // get the average for the first channel
-            analyser_node.getByteFrequencyData(array_freq_domain);
-            analyser_node.getByteTimeDomainData(array_time_domain);
-
-            if (microphone_stream.playbackState == microphone_stream.PLAYING_STATE) {
-                show_some_data(array_time_domain, 5, 200);
-            }
-        };
-    }
-
-}();
-
-	var alarmCycles = 0;
-	var endTime;
-
-	function millisToMinutesAndSeconds(millis) {
-      var minutes = Math.floor(millis / 60000);
-      var seconds = ((millis % 60000) / 1000).toFixed(0);
-      return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
-    }
-
-	function startTimer() {
-		console.log($('#timer_length_minutes').val());
-		now = Date.now();
-		endTime = Date.now() + 1000 * 60 * parseInt($('#timer_length_minutes').val());
-		console.log("now: " + now + " end time: " + endTime);
-		setTimeout(checkTimer, 1000);
-	}
-
-	function checkTimer() {
-		var timeRemaining = endTime - Date.now();
-		if(timeRemaining > 0){
-   		  $('#time_display').html(millisToMinutesAndSeconds(timeRemaining));
-		  setTimeout(checkTimer, 1000);
-		} else {
-  		  $('#time_display').html(millisToMinutesAndSeconds(0));
-		  soundGong();
-		}
-	}
-
-	function oneGong() {
-		var audio = new Audio('http://curiousbydefault.freehostia.com/sound_alarm.mp3');
-        audio.play();
-	}
-
-	function soundGong(){
-		var audio = new Audio('http://curiousbydefault.freehostia.com/sound_alarm.mp3');
-        audio.play();
-
-		if(alarmCycles < 2){
-			setTimeout(soundGong, 7000);
-			alarmCycles = alarmCycles + 1;
-		}else{
-			alarmCycles = 0;
-		}
-	}
-
-	window.attachSpeechIndexChangeHandlers = function() {
-		$('.speech-topic').click(function() {
-			console.log(this.id);
-			topic_and_index = this.id.split('_');
-			console.log("index: " + topic_and_index[1]);
-			setSpeechIndex(parseInt(topic_and_index[1]));
-		});
-	}
-
-	$(document).ready(function(){
-
-	    $('#speech_index').change(function() {
-			current = parseInt(this.value - 1);
-			console.log(current);
-		});
-
-		window.attachSpeechIndexChangeHandlers();
-
-	    var speechContainer = $('#container');
-
-		window.addSpeech = function() {
-			var input = document.createElement("input");
-			input.type = "text";
-			input.className = "speech-topic";
-
-			var speeches_already = $('.speech-topic').length;
-
-			input.id = 'topic_' + speeches_already;
-			container.appendChild(input);
-			window.attachSpeechIndexChangeHandlers();
-		}
-
-		window.nextSpeech = function() {
-			topic = $('#topic_' + current);
-			console.log(topic);
-			speakText(topic[0].value);
-			setSpeechIndex(current + 1);
-		}
-
-		window.randomIntFromInterval = function(min,max)
-		{
-			return Math.floor(Math.random() * (max - min) + min);
-		}
-
-		window.randomITJoke = function() {
-		    var joke_index = randomIntFromInterval(0, window.jokes.length);
-			speakText(window.jokes[joke_index]);
-		}
-
-		window.randomSteveQuote = function() {
-		    var steve_quote_index  = randomIntFromInterval(0, steve_quotes.length);
-			speakText(steve_quotes[steve_quote_index]);
-		}
-
-		window.randomBillQuote = function() {
-		    var bill_quote_index  = randomIntFromInterval(0, bill_quotes.length);
-			speakText(bill_quotes[bill_quote_index]);
-		}
-
-		function speakText(text){
-		  gain_node.gain = 0;
-		  var speech = new SpeechSynthesisUtterance(text);
-		  var voices = window.speechSynthesis.getVoices();
-		  speech.lang = $('#voice_choice').val();
-		  window.speechSynthesis.speak(speech);
-		  speech.onend = function(event) {
-			console.log(event);
-			announcing = false;
-        	window.checkMicrophoneLevel();
-			zeroVolumesBuffer();
-			gain_node.gain = 0.5;
-		  }
-		}
-
-	});
-
-	function pushIntoVolumesBuffer(value){
-		volumes_buffer.shift();
-		volumes_buffer.push(value);
-	    console.log("pushed " + value + " into buffer: " + volumes_buffer);
-	}
-
-	var names = [
-			"Alice",
-			"Arvind",
-			"Bang",
-			"Bryan",
-			"Cody",
-			"Daniel",
-			"David",
-			"Dennis",
-			"Dhiraj",
-			"Elizabeth",
-			"Elliott",
-			"Eric",
-			"Fotini",
-			"Frederick",
-			"Gabriel",
-			"Gerd",
-			"Helen",
-			"Jack",
-			"Jaime",
-			"Jason",
-			"Jenesia",
-			"Joao",
-			"Joel",
-			"Manoj",
-			"Marc",
-			"Marcin",
-			"Mario",
-			"Mauricio",
-			"Micah",
-			"Michael",
-			"Nattawat",
-			"Nicole",
-			"Paul",
-			"Priyanka",
-			"Qim",
-			"Ranjan",
-			"Rashi",
-			"Rhydian",
-			"Robert",
-			"Sandeep",
-			"Sonny",
-			"Stephan",
-			"Stephen",
-			"Timothy",
-      "Tom",
-			"Vanessa",
-			"Vinicius",
-			"Waleed"
-	];
-
-    function setSpeechIndex(index) {
-		current = index;
-		var speeches = $('.speech-topic');
-
-		for(var i = 0;i < speeches.length;i++) {
-			var element = $(speeches[i]);
-			element.removeClass('selected-speech');
-		}
-
-		var speech = $('.speech-topic')[index];
-		$(speech).addClass('selected-speech');
-	}
-
-	function sleep(milliseconds) {
-      return new Promise(resolve => setTimeout(resolve, milliseconds));
-    }
-
-	function disableApplauseOMeter(){
-		announcing = true;
-		gain_node.gain = 0;
-	}
-
-	function enableApplauseOMeter(){
-		announcing = false;
-		gain_node.gain = 0.5;
-	}
-
-	async function randomVictim(){
-	    var display_delay = 50;
-		for(var i = 0; i < 50; i++){
-			$('#victim_name').val(names[randomIntFromInterval(0, names.length)]);
-			await sleep(display_delay);
-			display_delay = display_delay + 10;
-		}
-	}
-
-	function zeroVolumesBuffer(){
-		volumes_buffer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		console.log('ZEROED BUFFER!' + volumes_buffer);
-	}
-
-    function getSum(total, num) {
-        return total + Math.round(num);
-    }
-
-	function averageOfBuffer() {
-		var sum_of_buffer = volumes_buffer.reduce(getSum, 0);
-		var average = Math.floor(sum_of_buffer/volumes_buffer.length);
-		//console.log("average: " + average + " " + volumes_buffer);
-		return average;
-	}
-
-	checkMicrophoneLevel = function(){
-
-	    if(average_volume = 100){
-  		  pushIntoVolumesBuffer(average_volume);
-		}
-		average_of_buffer = averageOfBuffer();
-		$('#volume_bar').width(average_of_buffer);
-
-	    if(!announcing) {
-			//console.log('average of buffer: ' + average_of_buffer + ' >> ' + volumes_buffer);
-			if(!changing && (average_of_buffer > change_threshold)) {
-				changing = true;
-				started_changing = Date.now();
-			}
-
-			if (changing && average_of_buffer < change_threshold) {
-				changing = false;
-			}
-
-			if(changing == true){
-			  var applause_sign = $('#applause_sign')
-			  applause_sign.css('visibility', 'visible');
-			  number_of_seconds = Math.floor((Date.now() - started_changing)/1000);
-			  applause_sign.html('APPLAUSE!! ' + number_of_seconds);
-
-			  if(number_of_seconds > 5) {
-   			     $('#applause_sign').html('THANK YOU!');
-				 changing = false;
-   			     $('#applause_sign').css('visibility', 'hidden');
-				 announcing = true;
-				 zeroVolumesBuffer()
-
-				 //oneGong();
-				 nextSpeech();
-			  }
-
-			} else {
-			  $('#applause_sign').css('visibility', 'hidden');
-			}
-
-			setTimeout(checkMicrophoneLevel, 1000);
-		}
-	}
-
-	setSpeechIndex(0);
-	window.checkMicrophoneLevel();
-
-</script>
-
-</head>
-<body>
-
-	<div id="volume_bar" style="background-color:blue;width:30px;height:50px;">
-	</div>
-	<br/>
-
-	<div id="applause_sign" style="background-color:black;color:white;width:650px;height:100px;padding:20px;font-size:30px;font-weight:bold;visibility:hidden;font-family:Arial;">
-	   APPLAUSE!!
-	</div>
-
-	<audio preload="auto" autobuffer="" id="alarm_sound" style="display:none;">
-		<source src="http://curiousbydefault.freehostia.com/sound_alarm.mp3">
-	</audio>
-
-	<hr/>
-   	  <label for="timer">Timer:</label><input id="timer_length_minutes" type="text" value="" size="5"/>
-	  <input type="button" value="Start!" onclick="startTimer();"></input>
-	  <br/>
-	  <div id="time_display">
-	     0:00
-	  </div>
-	<hr/>
-	  <input id="victim_name" type="text" value="Elliott Murray" size="10"></input>
-	  <input class="choice-button" type="button" onclick="randomVictim();" value="Choose random Sydneysider"></input>
-	<hr/>
-
-    <input type="button" value="Gong" onclick="oneGong();"/>
-    <input type="button" value="3 Gongs" onclick="soundGong();"/>
-
-	<hr/>
-
-	<h1>Presentations</h1>
-
-	<form>
-
-	  <div id="container">
-
-		<input id="topic_0" class="speech-topic" type="text" value='Hold on to your hats. Now we are ready for This month at Deus'></input>
-		<input id="topic_1" class="speech-topic" type="text" value='Next up we have the Vampish  Vanessa with Food Wall of Shame'></input>
-		<input id="topic_2" class="speech-topic" type="text" value='Now we have your favourite G M Kurt with This Month at Deus'></input>
-    <input id="topic_3" class="speech-topic" type="text" value='Next up give a hand as  Helen and Tony  do a duet about the sales pipeline'></input>
-
-		<input id="topic_4" class="speech-topic" type="text" value='Kirsty insert by Dave.'></input>
-  <input id="topic_5" class="speech-topic" type="text" value='Prepare yourself for some blue steel with   Elliott and Machine Learning for everyone! He is so hot right now'></input>
-		<input id="topic_6" class="speech-topic" type="text" value='And we have saved the best for last as the  sensational Jamie talks on Design Thinking, Lean & Agile.'></input>
-  </div>
-
-	  <div>
-		<input class="mc-button" type="button" onclick="addSpeech();" value="Add Speech"/>
-	  </div>
-
-	  <div>
-		<input class="mc-button" type="button" onclick="nextSpeech();" value="Announce Speech" />
-		<hr/>
-   	    <input class="mc-button" type="button" onclick="disableApplauseOMeter();" value="Disable Applause-o-meter" />
-	    <input class="mc-button" type="button" onclick="enableApplauseOMeter();" value="Enable Applause-o-meter" />
-	  </div>
-
-	  <hr/>
-	  <select id="voice_choice">
-	    <option value="en-US">Stephen</option>
-		<option value="en-GB">Lara</option>
-		<option value="de-DE">Inge</option>
-	  </select>
-
-	</form>
-
-	<!--h2> random BOT joke - say one - then wait for applause - if we get enough applause - say another one!</h2-->
-	<div>
-	  <input class="mc-button" type="button" onclick="randomITJoke();" value="Random IT Joke" />
-	  <input class="mc-button" type="button" onclick="randomSteveQuote();" value="Random Steve Quote" />
-	  <input class="mc-button" type="button" onclick="randomBillQuote();" value="Random Bill Quote" />
-	</div>
-
-	<!--div>
-	<h2> voices list: </h2>
-      	 window.speechSynthesis.getVoices()
-		 <ul>
-			<li> "Microsoft Hazel Desktop - English (Great Britain)", name: "Microsoft Hazel Desktop - English (Great Britain)", lang: "en-GB", localService: true, default: true</li>
-
-			<li> "Microsoft Hedda Desktop - German", name: "Microsoft Hedda Desktop - German", lang: "de-DE", localService: true, default: false</li>
-
-			<li> "Microsoft David Desktop - English (United States)", name: "Microsoft David Desktop - English (United States)", lang: "en-US", localService: true, default: false</li>
-
-			<li> "Microsoft Zira Desktop - English (United States)", name: "Microsoft Zira Desktop - English (United States)", lang: "en-US", localService: true, default: false</li>
-
-			<li> "Google Deutsch", name: "Google Deutsch", lang: "de-DE", localService: false, default: false</li>
-
-			<li> "Google US English", name: "Google US English", lang: "en-US", localService: false, default: false</li>
-
-			<li> "Google UK English Female", name: "Google UK English Female", lang: "en-GB", localService: false, default: false</li>
-
-			<li> "Google UK English Male", name: "Google UK English Male", lang: "en-GB", localService: false, default: false</li>
-
-			<li> "Google español", name: "Google español", lang: "es-ES", localService: false, default: false</li>
-
-			<li> "Google español de Estados Unidos", name: "Google español de Estados Unidos", lang: "es-US", localService: false, default: false</li>
-
-			<li> "Google français", name: "Google français", lang: "fr-FR", localService: false, default: false</li>
-
-			<li> "Google ??????", name: "Google ??????", lang: "hi-IN", localService: false, default: false</li>
-
-			<li> "Google Bahasa Indonesia", name: "Google Bahasa Indonesia", lang: "id-ID", localService: false, default: false</li>
-
-			<li> "Google italiano", name: "Google italiano", lang: "it-IT", localService: false, default: false</li>
-
-			<li> "Google ???", name: "Google ???", lang: "ja-JP", localService: false, default: false</li>
-
-			<li> "Google ???", name: "Google ???", lang: "ko-KR", localService: false, default: false</li>
-
-			<li> "Google Nederlands", name: "Google Nederlands", lang: "nl-NL", localService: false, default: false</li>
-
-			<li> "Google polski", name: "Google polski", lang: "pl-PL", localService: false, default: false</li>
-
-			<li> "Google português do Brasil", name: "Google português do Brasil", lang: "pt-BR", localService: false, default: false</li>
-
-			<li> "Google ???????", name: "Google ???????", lang: "ru-RU", localService: false, default: false</li>
-
-			<li> "Google ???(????)", name: "Google ???(????)", lang: "zh-CN", localService: false, default: false</li>
-
-			<li> "Google ??(??)", name: "Google ??(??)", lang: "zh-HK", localService: false, default: false</li>
-
-			<li> "Google ??(??)", name: "Google ??(??)", lang: "zh-TW", localService: false, default: false</li>
-		</ul>
-	</div-->
-
-	<!-- SSML - a way to style the speech
-		SSML Element / Description / Usage / Attributes
-		audio
-		Supports the insertion of recorded audio files.
-		Optional
-		src
-
-		break
-		An empty element used to control the prosodic boundaries between words.
-		Optional
-		strength, time
-
-		emphasis
-		Increases the level of stress with which the contained text is spoken.
-		Optional
-		level
-
-		lexicon
-		Specifies a lexicon document that contains the pronunciations for the content of the document.
-		Optional
-		uri, type
-
-		mark
-		Designates a specific reference point in the text sequence. This element can also be used to mark an output audio stream for asynchronous notification.
-		Optional
-		name
-
-		p and s
-		Denote the paragraph and sentence structure of the document.
-		Optional
-		xml:lang
-
-		phoneme
-		Indicates the phonetic pronunciation for the contained text. Overrides the pronunciations in the lexicon, if one is specified.
-		Optional
-		ph, alphabet
-
-		prosody
-		Controls the pitch, rate, and volume of the speech output.
-		Optional
-		pitch, contour, range, rate, duration, volume
-
-		say-as
-		Indicates the type of text contained in the element (such as acronym, number, and date).
-		Optional
-		interpret-as, format, detail
-
-		speak
-		The required root element for all SSML documents.
-		Required
-		version, xmlns, xml:lang
-
-		sub
-		Specifies a string of text that should be pronounced in place of the text contained in the element.
-		Optional
-		alias
-
-		voice
-		Specifies a voice and its attributes, to be used for synthesized speech, often used to change from one voice to another.
-		Optional
-		xml:lang, gender, age, variant, name
-
 </body>
 </html>
 
