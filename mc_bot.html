@@ -60,6 +60,17 @@
   
 <script type="text/javascript">
 
+    window.speech_topics = [];
+	speech_topics.push('Welcome to Back To Base March 2018 edition. Hello and I am M C Bot and I will be your most excellent host for today.');
+    speech_topics.push('Now Elliott will run Human Bingo. First grab a pen and bingo sheet');
+    speech_topics.push('You must find someone who matches the question. Write their name. You can only use a person once. Fill out as many as you can before the third gong finishes. If you answer them all before then shout BINGO.');
+	speech_topics.push('The next presentation at this Back To Base will be Elliott Murray with Machine Learning for everyone!');
+	speech_topics.push('Now we have Kurt Brown with This Month at Deus');
+	speech_topics.push('Next up we have Vanessa with the Food Stats');
+	speech_topics.push('The next presentation will be Jamie Sanft on Design Thinking, Lean & Agile');
+	speech_topics.push('Next up - Helen will update you about her sales pipeline');
+	speech_topics.push('Next up - Tony will update you about his sales pipeline');
+	
 	window.jokes = [];
 	jokes[0] = "Moses had the first tablet that could connect to the cloud.";
 	jokes[1] = "The first computer dates back to Adam and Eve. It was an Apple with limited memory, just one byte. And then everything crashed.";
@@ -109,10 +120,14 @@
 	function checkTimer() {
 		var timeRemaining = endTime - Date.now();
 		if(timeRemaining > 0){
-   		  $('#time_display').html(millisToMinutesAndSeconds(timeRemaining));
+		  minutes_and_seconds = millisToMinutesAndSeconds(timeRemaining);
+   		  $('#time_display').html(minutes_and_seconds);
+		  setTextInAudienceWindowDiv(minutes_and_seconds)
 		  setTimeout(checkTimer, 1000);
 		} else {
-  		  $('#time_display').html(millisToMinutesAndSeconds(0));
+		  minutes_and_seconds = millisToMinutesAndSeconds(0);
+  		  $('#time_display').html(minutes_and_seconds);
+  		  setTextInAudienceWindowDiv(minutes_and_seconds)
 		  soundGong();
 		}
 	}
@@ -140,32 +155,34 @@
 	
 	function initAudienceDiv(){
 		$(display_window.document.body).css({'background-color': 'black'});
-		$(display_window.document.body).html("<div id='audience_window_div'></div>");
+		$(display_window.document.body).html("<div id='audience_window_div'></div><br/><img id='audience_window_img' src=''></img>");
 		$(display_window.document.body).find('#audience_window_div').css({'background-color': 'black',
    																		  'color': 'white',
-																		  'width': '650px', 
-																		  'height': '200px', 
+																		  'width': '100%', 
+																		  'height': '300px', 
 																		  'padding': '20px',
-																		  'font-size': '100px',
+																		  'font-size': '240px',
 																		  'text-align': 'center',
 																		  'font-weight': 'bold',
 																		  'font-family': 'Arial'});
+	    //$(display_window.document.body).append()
 	}
 	
 	function applausePlease(){
-		var audienceDiv = document.createElement("div");
-		$(audienceDiv).html("APPLAUSE!");
-		$(audienceDiv).css({'background-color': 'black',
-		                    'color': 'white',
-							'width': '650px', 
-							'height': '100px', 
-							'padding': '20px',
-							'font-size': '60px',
-							'text-align': 'center',
-							'font-weight': 'bold',
- 						    'font-family': 'Arial'});
+		//var audienceDiv = document.createElement("div");
+		//$(audienceDiv).html("APPLAUSE!");
+		//$(audienceDiv).css({'background-color': 'black',
+		//                    'color': 'white',
+		//					'width': '650px', 
+		//					'height': '100px', 
+		//					'padding': '20px',
+		//					'font-size': '60px',
+		//					'text-align': 'center',
+		//					'font-weight': 'bold',
+ 		//				    'font-family': 'Arial'});
 
-		$(display_window.document.body).html(audienceDiv);
+		//$(display_window.document.body).html(audienceDiv);
+		setTextInAudienceWindowDiv("APPLAUSE!!!");
 		setTimeout(initAudienceDiv, 5000);
 	}
 
@@ -189,17 +206,26 @@
 
 		window.attachSpeechIndexChangeHandlers();
 		
-	    var speechContainer = $('#container');
-	
-		window.addSpeech = function() {
+	    var container = $('#speeches_container');
+
+        window.makeSpeechInput = function() {
 			var input = document.createElement("input");
 			input.type = "text";
 			input.className = "speech-topic";
-			
-			var speeches_already = $('.speech-topic').length;
-			
+			var speeches_already = $('.speech-topic').length - 1;
 			input.id = 'topic_' + speeches_already;
-			container.appendChild(input);
+			return input;
+		}
+		
+	    for(var i=0; i <= speech_topics.length - 1; i++){
+			var new_input = makeSpeechInput()
+			new_input.value = speech_topics[i];
+			container.append(new_input);
+			window.attachSpeechIndexChangeHandlers();
+		}
+
+		window.addSpeech = function() {
+			container.appendChild(makeSpeechInput());
 			window.attachSpeechIndexChangeHandlers();
 		}
 	
@@ -381,6 +407,7 @@
     <input type="button" value="Gong" onclick="oneGong();"/>
     <input type="button" value="3 Gongs" onclick="soundGong();"/>
     <input type="button" value="Applause Please" onclick="applausePlease();"/>
+    <input type="button" value="Clear Audience Window" onclick="initAudienceDiv();"/>
 
 	<hr/>
 	
@@ -388,13 +415,7 @@
 
 	<form>
 
-	  <div id="container">
-		<input id="topic_0" class="speech-topic" type="text" value='The next presentation at this Back To Base will be Elliott Murray with Machine Learning for everyone!'></input>
-		<input id="topic_1" class="speech-topic" type="text" value='Now we have Kurt Brown with This Month at Deus'></input>
-		<input id="topic_2" class="speech-topic" type="text" value='Next up we have Vanessa with the Food Stats'></input>
-		<input id="topic_3" class="speech-topic" type="text" value='The next presentation will be Jamie Sanft on Design Thinking, Lean & Agile'></input>
-		<input id="topic_4" class="speech-topic" type="text" value='Next up - Helen will update you about her sales pipeline'></input>
-		<input id="topic_5" class="speech-topic" type="text" value='Next up - Tony will update you about his sales pipeline'></input>
+	  <div id="speeches_container">
 	  </div>
 
 	  <div>
