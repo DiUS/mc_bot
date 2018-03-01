@@ -62,14 +62,21 @@
 
     window.speech_topics = [];
 	speech_topics.push('Welcome to Back To Base March 2018 edition. Hello and I am M C Bot and I will be your most excellent host for today.');
-    speech_topics.push('Now Elliott will run Human Bingo. First grab a pen and bingo sheet');
+    speech_topics.push('Now Elliott will run an Icebreaker activity called Human Bingo. First grab a pen and bingo sheet');
     speech_topics.push('You must find someone who matches the question. Write their name. You can only use a person once. Fill out as many as you can before the third gong finishes. If you answer them all before then shout BINGO.');
-	speech_topics.push('The next presentation at this Back To Base will be Elliott Murray with Machine Learning for everyone!');
 	speech_topics.push('Now we have Kurt Brown with This Month at Deus');
-	speech_topics.push('Next up we have Vanessa with the Food Stats');
-	speech_topics.push('The next presentation will be Jamie Sanft on Design Thinking, Lean & Agile');
-	speech_topics.push('Next up - Helen will update you about her sales pipeline');
-	speech_topics.push('Next up - Tony will update you about his sales pipeline');
+	speech_topics.push("Vanessa isn't feeling well today so she asked M C Bot to help with her slides");
+	speech_topics.push("We are still loving our banana bread we've eaten 45 slices or 4.5 kilograms!");
+	speech_topics.push("We must be tired as we have consumed approximately 60 energy balls which translates to 2.5kg of protein!!! Or Arnie is one of our colleagues...!");
+	speech_topics.push("Cashews were the go to nut last year although this year so far we are loving our almonds. We've eaten 5kg almonds versus 4kg of cashews");
+    speech_topics.push("Another change is Coke Zero. Coke Zero is now the popular drink whereas last year it was normal Coke");
+	speech_topics.push("You're so Cheesy! Our favourite chips are the the cheese flavours: Cheezels, Twisties & Doritos");
+	speech_topics.push("And as for big spenders, Jason has received the most packages this year so far, knocking Ricky off the lead from last year.");
+	speech_topics.push('Now we will hear some company updates from Kurt');
+	speech_topics.push('Next Helen and Tony will perform a duet updating us about the sales pipeline');
+	speech_topics.push('Now we have Kirsty who is going to give us an insight into our Partnerships and Community activities.');
+	speech_topics.push('The next presentation at this Back To Base will be Elliott Murray with Machine Learning for everyone!');
+	speech_topics.push("The next presentation will be Jamie Sanft on Design Thinking, Lean & Agile, I can't wait...");
 	
 	window.jokes = [];
 	jokes[0] = "Moses had the first tablet that could connect to the cloud.";
@@ -92,7 +99,7 @@
 	steve_quotes[3] = "When you're young, you look at television and think, there's a conspiracy. The networks have conspired to dumb us down. But when you get a little older, you realize that's not true. The networks are in business to give people exactly what they want. Steve Jobs"
 	
 	window.bill_quotes = [];
-	bill_quotes[0] = "When you're young, you look at television and think, there's a conspiracy. The networks have conspired to dumb us down. But when you get a little older, you realize that's not true. The networks are in business to give people exactly what they want. Bill Gates";
+	bill_quotes[0] = "Whether it's Google or Apple or free software, we've got some fantastic competitors and it keeps us on our toes. Bill Gates";
 	bill_quotes[1] = "People always fear change. People feared electricity when it was invented, didn't they? People feared coal, they feared gas-powered engines... There will always be ignorance, and ignorance leads to fear. But with time, people will come to accept their silicon masters.";
 	bill_quotes[2] = "I have been struck again and again by how important measurement is to improving the human condition. Bill Gates"
 	bill_quotes[3] = "Being flooded with information doesn't mean we have the right information or that we're in touch with the right people."
@@ -151,11 +158,12 @@
 	
 	function speakFreely(){
 		speakText($('#free_text').val());
+		setImageInAudienceWindow("http://curiousbydefault.freehostia.com/mc_bot_talking.png");
 	}
 	
 	function initAudienceDiv(){
 		$(display_window.document.body).css({'background-color': 'black'});
-		$(display_window.document.body).html("<div id='audience_window_div'></div><br/><img id='audience_window_img' src=''></img>");
+		$(display_window.document.body).html("<div id='audience_window_div'></div><br/><img id='audience_window_img' src='http://curiousbydefault.freehostia.com/mc_bot.png'></img>");
 		$(display_window.document.body).find('#audience_window_div').css({'background-color': 'black',
    																		  'color': 'white',
 																		  'width': '100%', 
@@ -211,6 +219,7 @@
         window.makeSpeechInput = function() {
 			var input = document.createElement("input");
 			input.type = "text";
+			input.size = 100;
 			input.className = "speech-topic";
 			var speeches_already = $('.speech-topic').length - 1;
 			input.id = 'topic_' + speeches_already;
@@ -225,7 +234,7 @@
 		}
 
 		window.addSpeech = function() {
-			container.appendChild(makeSpeechInput());
+			container.append(makeSpeechInput());
 			window.attachSpeechIndexChangeHandlers();
 		}
 	
@@ -234,6 +243,7 @@
 			console.log(topic);
 			speakText(topic[0].value);
 			setSpeechIndex(current + 1);
+			setImageInAudienceWindow("http://curiousbydefault.freehostia.com/mc_bot_talking.png");
 		}
 		
 		window.randomIntFromInterval = function(min,max)
@@ -244,16 +254,22 @@
 		window.randomITJoke = function() {
 		    var joke_index = randomIntFromInterval(0, window.jokes.length);
 			speakText(window.jokes[joke_index]);
+			setImageInAudienceWindow("http://funcases.co.uk/1967-large_default/laughing-emoji-power-bank.jpg");
+			clearTextInAudienceWindowDiv();
 		}
 
 		window.randomSteveQuote = function() {
 		    var steve_quote_index  = randomIntFromInterval(0, steve_quotes.length);
 			speakText(steve_quotes[steve_quote_index]);
+			setImageInAudienceWindow("https://www.blessthisstuff.com/imagens/stuff/img_steve_jobs_biography_walter_isaacson_2.jpg");
+			clearTextInAudienceWindowDiv();
 		}
 
 		window.randomBillQuote = function() {
 		    var bill_quote_index  = randomIntFromInterval(0, bill_quotes.length);
 			speakText(bill_quotes[bill_quote_index]);
+			setImageInAudienceWindow("http://www.aryzauq.tv/wp-content/uploads/2016/03/bill-gates-desk-picture.jpg");
+			clearTextInAudienceWindowDiv();
 		}
 
 		window.speakText = function(text){
@@ -263,6 +279,7 @@
 		  window.speechSynthesis.speak(speech);
 		  speech.onend = function(event) {
 			console.log(event);
+			clearImageInAudienceWindow();
 		  }
 		}
 		
@@ -276,7 +293,6 @@
 			"Alvin",
 			"Andreas",
 			"Andrew",
-			"Ankush",
 			"Arvind",
 			"Bang",
 			"Ben",
@@ -334,7 +350,6 @@
 			"Sandeep",
 			"Sean",
 			"Shidi",
-			"Sofy",
 			"Sol",
 			"Sonny",
 			"Stephan",
@@ -370,6 +385,18 @@
 	
 	window.setTextInAudienceWindowDiv = function(text) {
 		$(display_window.document.body).find('#audience_window_div').html(text);
+	}
+
+	window.clearTextInAudienceWindowDiv = function() {
+		$(display_window.document.body).find('#audience_window_div').html("");
+	}
+	
+	window.setImageInAudienceWindow = function(url) {
+		$(display_window.document.body).find('#audience_window_img').attr('src', url);
+	}
+
+	window.clearImageInAudienceWindow = function(url) {
+		$(display_window.document.body).find('#audience_window_img').attr('src', 'http://curiousbydefault.freehostia.com/mc_bot.png');
 	}
 	
 	async function randomVictim(){
