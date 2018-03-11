@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "mythic-groove-197823",
+  "private_key_id": "89568ccf90cca18899fe3e1bad42150a46ec714c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCyrZDo88RTQkKV\n34Ytd44F9r8uTayw4STGdwt+P+UvesPbnK8Z3/BQHYCivPCVWrYh1Aw3yiR8v8pK\nZVQ2Fero752mKeskl4EEp4pCvolhaUQWtlKe7iCJoYFxCD8PdpIf52EItMLjVyXz\nVrZuinnl5R7Q6X/dmIMXiiXrw7M/OoTfFFZNjIsvBe13XhFm2KCpykWOtu4xIcGr\n9Su4pzthhNcmCaJeM6QKLz4R7GOY/BYhQjn4WoA8zCQvFW8lKf83951gfIv2qrlm\nKWsorKN6ujFhitgyn4ftgqgl73LFJd/kKzHuKREW02ahcMAIaVqu+m3A5QzkOc3N\nwEmWVIfLAgMBAAECggEARlr0k92kgPo2uMfmkBGi4TNLDUL1jEJi1ij65A/pwRvQ\ncjGMex5EBG/RfoLyIoUw8ToLQ457domYcFnc4l0X/feX9l1MI0Dqwvfrh6N5+drW\nvjC1cLIoKrlm/Ch4mDCikiBsA18V3CmtHleXBwjMvdrNmwpOWGWcvNCfZOnOs0bB\nVDoUYmZrVAwjcaG+cXZ0ghsIaMuI6RsAg/Tci+v81qz+9EarxUZLcb4blr3/lCTp\nqmt8wjVFglOeenmZMCyLtC6tkJOiLMM/0N1nqYPUxxARKXo6/tQC1hG/zkQRmOwo\nb1gnE8gc4vAkZ/pGVm5A+V7k9lOELlN9MRvbeHVrMQKBgQDj+MvNwcUoNL2kO/oj\nK3y2Ni9f5NhhFeLv0lpbkQ1dmL4sPyDyVtBv6lW8XODJhaS/lz2y9W8fpyAkmAB4\nsIXzFlhEoIPHBC1ERABVZxtNOppfEly6iK0ieSMCSWgpU54ecSSEv58VwJntobjj\nHPxolZqaZZa7waSwjuk3NIYx2wKBgQDIpUp8kT82ZBLPd3xu4xVsB+Jl5BUlWRHp\n+1IApw13PaUBqa3fz5Mr3svboHwH+NGz4u/3NXQXt/XY+CCJxTYyB6Mg/CgaEy2t\nXGaYj9jPbIEtgbxClj1v8c+TXqZyt516S6QwGLeeZv6d3eNSKpj5JXQjo9bBsXBj\njNVjt0u80QKBgEMzmShrQWorueeLAp6ReC7iZC65cAuWfxJBCP/LD4yStSSn61dk\nvgbvphxjqKPfMISF2dtCPGKxSmlfIWxyZNoWsShxxMbK9WkVPp/uR/8JEm6KJCmc\nlqT93pMS/pCIJKlGowQ61HN+FiIVtUHFzqYpy6xN3BQ27gxZ5GewpQpXAoGAbPhg\nSOD1jMuy75w8J1kLRF3P1niWB2+lbAdDVPllNdJz8EBAH2Jz0oqw+rnhQs8ezOy+\nWOtd/pe5XLn9qfVCZs+BCCQKf4bU8udRDSBqptSOH7HrFdrUyRxyGN551anlTAsS\nw9BYwR28wO5GTFS4Oe/ecJDFzPJaUKanKf3dk1ECgYAb79kcur+ABOXBFir/b3so\n0cf/XgrK7riLqpqPf1DenyFKMOYrwoI/YpuvTC7r1yNjV/ZSQ5Hha6WfLPoYw7pK\nG+fd06APCg/rDgU7/6jY0bdntsoId5Yvn1s2EQcgKTdqFEAKhdP5b5qWrkLLdaHn\nsk0LboRY2Y8cH/IEEiMm5A==\n-----END PRIVATE KEY-----\n",
+  "client_email": "mc-bot-service-account@mythic-groove-197823.iam.gserviceaccount.com",
+  "client_id": "110928381757219629603",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/mc-bot-service-account%40mythic-groove-197823.iam.gserviceaccount.com"
+}
