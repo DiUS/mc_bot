@@ -57,3 +57,24 @@ sessionClient
   .catch(err => {
     console.error('ERROR:', err);
   });
+
+var host = "127.0.0.1";
+var port = 8000;
+var express = require("express");
+
+var app = express();
+
+app.get('/hello', (req, res) => res.send('Hello McBot!'))
+
+app.post('/webhook', function (req, res) {
+  console.log("got a post request!!!!!!!!!", req);
+  res.send('Got a new POST request')
+})
+
+app.use('/', express.static('/home/aa/projects/mc_bot/node/'));
+
+app.listen(port, host);
+
+
+
+
