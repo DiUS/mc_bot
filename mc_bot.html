@@ -18,6 +18,11 @@
 	margin-left: 5px;
   }
 
+  .free-speech-topic {
+	margin-bottom: 15px;
+	display: block;
+  }
+
   .speech-topic {
 	margin-bottom: 15px;
 	display: block;
@@ -61,17 +66,9 @@
 <script type="text/javascript">
 
     window.speech_topics = [];
-	speech_topics.push('Welcome to Back To Base March 2018 edition. Hello and I am M C Bot and I will be your most excellent host for today.');
-    speech_topics.push('Now Elliott will run an Icebreaker activity called Human Bingo. First grab a pen and bingo sheet');
-    speech_topics.push('You must find someone who matches the question. Write their name. You can only use a person once. Fill out as many as you can before the third gong finishes. If you answer them all before then shout BINGO.');
+	speech_topics.push('Welcome to Back To Base March 2018 edition.');
+    speech_topics.push('Now Elliott will run an Icebreaker activity called Human Bingo.');
 	speech_topics.push('Now we have Kurt Brown with This Month at Deus');
-	speech_topics.push("Vanessa isn't feeling well today so she asked M C Bot to help with her slides");
-	speech_topics.push("We are still loving our banana bread we've eaten 45 slices or 4.5 kilograms!");
-	speech_topics.push("We must be tired as we have consumed approximately 60 energy balls which translates to 2.5kg of protein!!! Or Arnie is one of our colleagues...!");
-	speech_topics.push("Cashews were the go to nut last year although this year so far we are loving our almonds. We've eaten 5kg almonds versus 4kg of cashews");
-    speech_topics.push("Another change is Coke Zero. Coke Zero is now the popular drink whereas last year it was normal Coke");
-	speech_topics.push("You're so Cheesy! Our favourite chips are the the cheese flavours: Cheezels, Twisties & Doritos");
-	speech_topics.push("And as for big spenders, Jason has received the most packages this year so far, knocking Ricky off the lead from last year.");
 	speech_topics.push('Now we will hear some company updates from Kurt');
 	speech_topics.push('Next Helen and Tony will perform a duet updating us about the sales pipeline');
 	speech_topics.push('Now we have Kirsty who is going to give us an insight into our Partnerships and Community activities.');
@@ -116,11 +113,15 @@
       return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
     }
 
-	function startTimer() {
+	function startTimerBasedOnInput() {
 		console.log($('#timer_length_minutes').val());
+		startTimer(parseInt($('#timer_length_minutes').val()));
+	}
+	
+	function startTimer(length) {
 		now = Date.now();
-		endTime = Date.now() + 1000 * 60 * parseInt($('#timer_length_minutes').val());
-		console.log("now: " + now + " end time: " + endTime);
+		endTime = Date.now() + 1000 * 60 * length;
+		console.log("startTimer for: " + length + " >> now: " + now + " end time: " + endTime);
 		setTimeout(checkTimer, 1000);
 	}
 	
@@ -202,6 +203,28 @@
 			setSpeechIndex(parseInt(topic_and_index[1]));
 		});
 	}
+
+	window.checkDialogFlow = function() {
+	  $.ajax({
+        url: 'https://us-central1-mcbotwebhook.cloudfunctions.net/function-2',
+        success: function(data) {
+		  console.log(data);
+          var response = JSON.parse(data);
+		  console.log(response);
+		  if(response.goToNext){
+		    console.log("go to next!");
+			nextSpeech();
+          }
+		  console.log("---- timer length: " + response.timerLength);
+		  if(response.timerLength > 0) {
+            console.log(" got a timer length! ", parseInt(response.timerLength))
+            startTimer(parseInt(response.timerLength));		    
+		  }
+        }
+      });
+	  
+	  setTimeout(checkDialogFlow, 2000);
+	}
 	
 	$(document).ready(function(){
 
@@ -274,6 +297,10 @@
 
 		window.speakText = function(text){
 		  var speech = new SpeechSynthesisUtterance(text);
+		  var myRate = speech.rate;
+		  console.log("my rate now: ", myRate);
+          //speech.rate = 3; 
+		  
 		  var voices = window.speechSynthesis.getVoices();
 		  speech.lang = $('#voice_choice').val();
 		  window.speechSynthesis.speak(speech);
@@ -282,6 +309,9 @@
 			clearImageInAudienceWindow();
 		  }
 		}
+		
+		setSpeechIndex(0);
+		checkDialogFlow();
 		
 	});
 	
@@ -421,7 +451,7 @@
 	
 	<hr/>
    	  <label for="timer">Timer:</label><input id="timer_length_minutes" type="text" value="" size="5"/>
-	  <input type="button" value="Start!" onclick="startTimer();"></input>
+	  <input type="button" value="Start!" onclick="startTimerBasedOnInput();"></input>
 	  <br/>
 	  <div id="time_display">
 	     0:00
@@ -451,7 +481,7 @@
 	  </div>
 
       <hr/>
-	    <label for="free_text">Free Speech</label><input id="free_text" class="speech-topic" type="text"></input><input class="mc-button" type="button" onclick="speakFreely();" value="Speak Freely" />
+	    <label for="free_text">Free Speech</label><input id="free_text" class="free-speech-topic" type="text"></input><input class="mc-button" type="button" onclick="speakFreely();" value="Speak Freely" />
 	  <hr/>
 	  
 	  <!-- div>
@@ -463,8 +493,8 @@
 	  
 	  <hr/>
 	  <select id="voice_choice">
-	    <option value="en-US">Stephen</option>
 		<option value="en-GB">Lara</option>
+	    <option value="en-US">Stephen</option>
 		<option value="de-DE">Inge</option>
 	  </select>
 
